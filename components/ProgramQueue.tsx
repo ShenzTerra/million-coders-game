@@ -6,9 +6,6 @@ interface ProgramQueueProps {
   program: Command[];
   onRemove: (id: string, parentId?: string) => void;
   onClear: () => void;
-  onRun: () => void;
-  onStop: () => void;
-  onReset: () => void;
   isRunning: boolean;
   currentStepIndex: string | null;
   activeLoopId: string | null;
@@ -18,142 +15,96 @@ interface ProgramQueueProps {
 }
 
 const ProgramQueue: React.FC<ProgramQueueProps> = ({ 
-  program, onRemove, onClear, onRun, onStop, onReset, isRunning, currentStepIndex, activeLoopId, onSetActiveLoop, onUpdateRepeatCount, isDarkMode 
+  program, onRemove, onClear, isRunning, currentStepIndex, activeLoopId, onSetActiveLoop, onUpdateRepeatCount, isDarkMode 
 }) => {
 
   const renderCommand = (cmd: Command, parentId?: string) => {
     const isActive = currentStepIndex === cmd.id;
-    const isLoopActive = activeLoopId === cmd.id;
-    
-    if (cmd.type === CommandType.REPEAT) {
-      return (
-        <div key={cmd.id} className="flex flex-col mb-4 w-full relative">
-          {/* Header */}
-          <div 
-            className={`
-              relative z-20 p-4 rounded-t-[2rem] rounded-br-[1.5rem] border-t-4 border-x-4 flex items-center justify-between transition-all duration-300
-              ${isLoopActive ? (isDarkMode ? 'bg-purple-900/30 border-purple-500' : 'bg-purple-100 border-purple-400 shadow-sm') : (isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200')}
-            `}
-          >
-            <div className="flex items-center gap-3">
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-lg ${isLoopActive ? 'bg-purple-500 text-white' : (isDarkMode ? 'bg-slate-700 text-slate-500' : 'bg-slate-200 text-slate-400')}`}>🔁</div>
-              <div className="flex items-center gap-1 bg-black/5 dark:bg-black/20 p-1 rounded-full">
-                <button 
-                  disabled={isRunning}
-                  onClick={(e) => { e.stopPropagation(); onUpdateRepeatCount(cmd.id, -1); }} 
-                  className="w-6 h-6 bg-white dark:bg-slate-700 rounded-full font-black text-slate-500 text-xs"
-                >-</button>
-                <span className={`text-base font-black min-w-[20px] text-center ${isLoopActive ? 'text-purple-600' : 'text-slate-500'}`}>{cmd.count}</span>
-                <button 
-                  disabled={isRunning}
-                  onClick={(e) => { e.stopPropagation(); onUpdateRepeatCount(cmd.id, 1); }} 
-                  className="w-6 h-6 bg-purple-500 rounded-full font-black text-white text-xs"
-                >+</button>
-              </div>
-            </div>
-            
-            {!isRunning && (
-              <div className="flex items-center gap-2">
-                <button 
-                  onClick={() => onSetActiveLoop(isLoopActive ? null : cmd.id)}
-                  className={`w-9 h-9 rounded-xl flex items-center justify-center text-lg transition-all ${isLoopActive ? 'bg-green-400 text-white scale-110 shadow-md' : (isDarkMode ? 'bg-slate-700 text-slate-500' : 'bg-slate-200 text-slate-400')}`}
-                >
-                  {isLoopActive ? '✓' : '✏️'}
-                </button>
-                <button onClick={() => onRemove(cmd.id)} className="text-red-400 hover:text-red-600 font-bold ml-1">✕</button>
-              </div>
-            )}
-          </div>
+    const isNestingActive = activeLoopId === cmd.id;
+    const isLoop = cmd.type === CommandType.REPEAT;
 
-          {/* Body */}
-          <div className="flex w-full">
-            <div 
-              className={`w-[40px] flex-shrink-0 border-l-[12px] transition-all duration-300 ${isLoopActive ? 'border-purple-500 bg-purple-500/5' : 'border-slate-200 dark:border-slate-700 bg-slate-500/5'}`}
-            />
-            <div className={`flex-1 py-3 pr-3 flex flex-col gap-3 transition-all ${isLoopActive ? 'bg-purple-500/5' : 'bg-slate-500/5'}`}>
-              {cmd.nested && cmd.nested.length > 0 ? (
-                cmd.nested.map(nc => renderCommand(nc, cmd.id))
-              ) : (
-                <div className="py-2 text-center text-[9px] font-black text-slate-300 dark:text-slate-600 uppercase tracking-widest italic pr-4">Empty</div>
-              )}
+    if (isLoop) {
+        return (
+            <div key={cmd.id} className="w-full mb-6 flex flex-col animate-in slide-in-from-right duration-300">
+                <div className={`p-5 rounded-t-[2.5rem] border-t-4 border-x-4 border-purple-400 flex items-center justify-between ${isNestingActive ? 'bg-purple-100 dark:bg-purple-900/30' : 'bg-slate-50 dark:bg-slate-800'}`}>
+                    <div className="flex items-center gap-3">
+                        <span className="text-3xl drop-shadow-sm">🔁</span>
+                        <div className="flex items-center gap-2 bg-white/60 dark:bg-black/20 rounded-full px-2 py-1 shadow-inner">
+                            <button onClick={(e) => {e.stopPropagation(); onUpdateRepeatCount(cmd.id, -1)}} className="w-8 h-8 rounded-full bg-white dark:bg-slate-700 shadow-sm font-black text-xl flex items-center justify-center transition-transform active:scale-75">-</button>
+                            <span className="text-2xl font-black min-w-[25px] text-center text-purple-600">{cmd.count}</span>
+                            <button onClick={(e) => {e.stopPropagation(); onUpdateRepeatCount(cmd.id, 1)}} className="w-8 h-8 rounded-full bg-purple-500 text-white shadow-sm font-black text-xl flex items-center justify-center transition-transform active:scale-75">+</button>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button 
+                            onClick={() => onSetActiveLoop(isNestingActive ? null : cmd.id)} 
+                            className={`w-12 h-12 rounded-2xl font-bold flex items-center justify-center transition-all ${isNestingActive ? 'bg-green-500 text-white shadow-lg scale-110' : 'bg-slate-200 text-slate-500'}`}
+                        >
+                            {isNestingActive ? '✓' : '✏️'}
+                        </button>
+                        <button onClick={() => onRemove(cmd.id)} className="w-10 h-10 text-red-500 text-3xl font-black hover:scale-110 transition-transform">✕</button>
+                    </div>
+                </div>
+                <div className={`border-l-8 border-purple-400 p-4 flex flex-col gap-4 min-h-[80px] ${isNestingActive ? 'bg-purple-50 dark:bg-purple-900/10' : 'bg-slate-50/50 dark:bg-slate-800/20'}`}>
+                    {cmd.nested?.map(nc => renderCommand(nc, cmd.id))}
+                    {(!cmd.nested || cmd.nested.length === 0) && (
+                        <div className="py-6 text-center border-4 border-dashed border-purple-200 dark:border-purple-800 rounded-[2rem]">
+                            <span className="text-[12px] font-black uppercase text-purple-300 tracking-[0.2em]">Drop blocks here!</span>
+                        </div>
+                    )}
+                </div>
+                <div className="h-8 border-b-8 border-l-8 border-purple-400 rounded-bl-[2.5rem] w-24" />
             </div>
-          </div>
-          
-          {/* Footer */}
-          <div 
-            className={`
-              h-8 w-[100px] border-l-[12px] border-b-[12px] rounded-bl-[2rem] transition-all duration-300
-              ${isLoopActive ? 'border-purple-500' : 'border-slate-200 dark:border-slate-700'}
-            `}
-          />
-        </div>
-      );
+        );
     }
 
-    const getColorClass = (type: CommandType) => {
-        switch (type) {
-            case CommandType.MOVE: return 'bg-red-500';
-            case CommandType.TURN_LEFT: return 'bg-green-500';
-            case CommandType.TURN_RIGHT: return 'bg-yellow-400';
-            case CommandType.GO_TO: return 'bg-blue-400';
-            case CommandType.GLIDE: return 'bg-blue-500';
-            default: return 'bg-blue-500';
+    const colorStyle = () => {
+        switch(cmd.type) {
+            case CommandType.MOVE: return 'var(--clay-red)';
+            case CommandType.TURN_LEFT: return 'var(--clay-green)';
+            case CommandType.TURN_RIGHT: return 'var(--clay-yellow)';
+            case CommandType.GO_TO: return 'var(--clay-orange)';
+            case CommandType.GLIDE: return 'var(--clay-blue)';
+            default: return 'var(--clay-blue)';
         }
     };
 
     return (
-      <div key={cmd.id} className="relative w-full flex justify-center z-30">
         <div 
-          className={`
-            p-4 rounded-[1.5rem] flex items-center gap-4 transition-all duration-300 border-4 w-full
-            ${isActive ? 'bg-white dark:bg-slate-100 text-slate-800 border-slate-800 scale-105 shadow-lg' : `${getColorClass(cmd.type)} text-white border-transparent shadow-sm`}
-          `}
+          key={cmd.id} 
+          className={`p-4 rounded-[1.8rem] flex items-center justify-between gap-4 transition-all border-4 animate-in slide-in-from-right duration-200 shadow-md ${isActive ? 'bg-white border-slate-800 scale-105 shadow-2xl z-20' : 'border-transparent text-white'}`}
+          style={{ backgroundColor: isActive ? 'white' : colorStyle() }}
         >
-          <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-lg bg-black/10 flex-shrink-0`}>
-            {cmd.type === CommandType.MOVE ? '⬆️' : cmd.type.includes('LEFT') ? '⬅️' : cmd.type.includes('RIGHT') ? '➡️' : cmd.type === CommandType.GO_TO ? '📍' : '🚀'}
-          </div>
-          <div className="flex-1 flex flex-col overflow-hidden">
-            <span className="font-black text-[10px] uppercase tracking-widest truncate">{cmd.type.replace('_', ' ')}</span>
-          </div>
-          {!isRunning && (
-            <button 
-                onClick={(e) => { e.stopPropagation(); onRemove(cmd.id, parentId); }} 
-                className="text-white/50 hover:text-white font-bold"
-            >✕</button>
-          )}
+            <div className="flex items-center gap-4 truncate">
+                <span className="bg-black/10 w-12 h-12 flex items-center justify-center rounded-2xl text-2xl shrink-0 drop-shadow-sm">
+                  {cmd.type === CommandType.MOVE ? '⬆️' : cmd.type.includes('LEFT') ? '⬅️' : cmd.type.includes('RIGHT') ? '➡️' : cmd.type === CommandType.GO_TO ? '📍' : '🚀'}
+                </span>
+                <span className={`text-sm md:text-base font-black uppercase tracking-widest truncate ${isActive ? 'text-slate-800' : 'text-white'}`}>{cmd.type.replace('_', ' ')}</span>
+            </div>
+            {!isRunning && <button onClick={() => onRemove(cmd.id, parentId)} className={`w-10 h-10 flex items-center justify-center font-black text-2xl transition-all hover:scale-125 ${isActive ? 'text-slate-400' : 'text-white/60'}`}>✕</button>}
         </div>
-      </div>
     );
   };
 
   return (
-    <div className="h-full flex flex-col gap-4 overflow-hidden">
-      <div className="flex justify-between items-center px-4 flex-shrink-0">
-          <h3 className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em]">Code</h3>
-          <button onClick={onClear} disabled={isRunning} className="text-red-400 text-[10px] font-black uppercase tracking-widest">Clear</button>
-      </div>
-
-      <div className="flex-1 bg-slate-50/50 dark:bg-slate-900/20 rounded-[3rem] p-5 overflow-y-auto border-4 border-dashed border-slate-100 dark:border-slate-800 custom-scrollbar min-h-0">
-        {program.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center opacity-20 gap-4">
-            <span className="text-6xl">🧩</span>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center w-full min-h-full">
-            {program.map(cmd => renderCommand(cmd))}
-          </div>
-        )}
-      </div>
-
-      <div className="flex flex-col gap-3 flex-shrink-0">
-        <button 
-          onClick={isRunning ? onStop : onRun} 
-          disabled={program.length === 0}
-          className={`clay-btn ${isRunning ? 'clay-btn-red' : 'clay-btn-black'} py-4 rounded-[2rem] font-black text-xl text-white uppercase transition-all flex items-center justify-center gap-3`}
-        >
-          {isRunning ? 'Stop' : 'Go!'}
-        </button>
-      </div>
+    <div className="h-full flex flex-col gap-6">
+        <div className="flex justify-between items-center px-2">
+            <h4 className="text-[12px] font-black uppercase text-slate-400 tracking-[0.3em]">Your Program</h4>
+            <button onClick={onClear} className="text-[12px] font-black uppercase text-red-500 tracking-widest hover:underline transition-all active:scale-90">Clear All</button>
+        </div>
+        
+        <div className="flex-1 flex flex-col gap-4 overflow-y-auto custom-scrollbar pr-1">
+            {program.length === 0 ? (
+                <div className="flex-1 flex flex-col items-center justify-center py-20 px-8 border-4 border-dashed border-slate-200 dark:border-slate-800 rounded-[3rem] opacity-30">
+                    <span className="text-8xl mb-6">🪄</span>
+                    <span className="text-lg font-black uppercase tracking-[0.2em] text-center leading-tight">Pick a block<br/>to start!</span>
+                </div>
+            ) : (
+                <div className="flex flex-col gap-4">
+                    {program.map(cmd => renderCommand(cmd))}
+                </div>
+            )}
+        </div>
     </div>
   );
 };

@@ -4,26 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClayBot Studio • Module 2</title>
+    <title>ClayBot Studio • Coding for Kids</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --clay-red: #ff5f5f;
-            --clay-blue: #4d94ff;
-            --clay-green: #63d471;
-            --clay-yellow: #ffcc33;
-            --clay-purple: #a374ff;
-            --bg-canvas: #f0f4f8;
+            /* Child-friendly "Toy" Palette */
+            --clay-red: #FF6B6B;
+            --clay-blue: #4D96FF;
+            --clay-green: #6BCB77;
+            --clay-yellow: #FFD93D;
+            --clay-purple: #927DFF;
+            --clay-orange: #FF9F43;
+            
+            --bg-canvas: #F7F9FC;
             --clay-card-bg: #ffffff;
-            --clay-card-border: #eeeeee;
-            --clay-card-shadow: #dddddd;
-            --clay-text: #444444;
-            --clay-hint-bg: #ffffff;
+            --clay-card-border: #E2E8F0;
+            --clay-card-shadow: #CBD5E1;
+            --clay-text: #334155;
             --playground-bg: #ffffff;
-            --outer-shadow: rgba(0, 0, 0, 0.1);
+            --outer-shadow: rgba(51, 65, 85, 0.08);
         }
 
         .dark-mode {
@@ -32,7 +34,6 @@
             --clay-card-border: #334155;
             --clay-card-shadow: #020617;
             --clay-text: #f1f5f9;
-            --clay-hint-bg: #0f172a;
             --playground-bg: #0f172a;
             --outer-shadow: rgba(0, 0, 0, 0.4);
         }
@@ -46,37 +47,43 @@
           transition: background-color 0.4s ease, color 0.4s ease;
         }
 
-        /* Clay Texture Overlay */
+        /* Subtle "Clay" Texture */
         body::before {
             content: "";
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none;
-            opacity: 0.04;
+            opacity: 0.03;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
             z-index: 999;
         }
 
         .clay-card {
             background: var(--clay-card-bg);
-            border-radius: 40px;
+            border-radius: 32px;
             border: 4px solid var(--clay-card-border);
             box-shadow: 0 8px 0 var(--clay-card-shadow), 0 15px 30px var(--outer-shadow);
-            transition: all 0.4s ease;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .clay-btn-red { background: var(--clay-red); box-shadow: 0 8px 0 #cc4b4b; }
-        .clay-btn-blue { background: var(--clay-blue); box-shadow: 0 8px 0 #3d76cc; }
-        .clay-btn-green { background: var(--clay-green); box-shadow: 0 8px 0 #4fa85a; }
-        .clay-btn-yellow { background: var(--clay-yellow); box-shadow: 0 8px 0 #cca329; }
-        .clay-btn-purple { background: var(--clay-purple); box-shadow: 0 8px 0 #8559cc; }
-        .clay-btn-black { background: #333; box-shadow: 0 8px 0 #000; }
-        
-        .dark-mode .clay-btn-black { background: #0f172a; border: 2px solid #334155; box-shadow: 0 8px 0 #020617; }
+        /* Clay Buttons with inner highlights for a 3D effect */
+        .clay-btn {
+            position: relative;
+            border: 2px solid rgba(255,255,255,0.2);
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
 
-        .clay-btn:active {
+        .clay-btn-red { background: var(--clay-red); box-shadow: 0 6px 0 #E55A5A, inset 0 2px 4px rgba(255,255,255,0.3); }
+        .clay-btn-blue { background: var(--clay-blue); box-shadow: 0 6px 0 #3D85E5, inset 0 2px 4px rgba(255,255,255,0.3); }
+        .clay-btn-green { background: var(--clay-green); box-shadow: 0 6px 0 #5BB566, inset 0 2px 4px rgba(255,255,255,0.3); }
+        .clay-btn-yellow { background: var(--clay-yellow); box-shadow: 0 6px 0 #E5C236, inset 0 2px 4px rgba(255,255,255,0.3); }
+        .clay-btn-purple { background: var(--clay-purple); box-shadow: 0 6px 0 #7E6AE5, inset 0 2px 4px rgba(255,255,255,0.3); }
+        .clay-btn-orange { background: var(--clay-orange); box-shadow: 0 6px 0 #E58B36, inset 0 2px 4px rgba(255,255,255,0.3); }
+        .clay-btn-black { background: #334155; box-shadow: 0 6px 0 #1E293B, inset 0 2px 4px rgba(255,255,255,0.1); }
+        
+        .clay-btn:active:not(:disabled) {
             transform: translateY(4px);
-            box-shadow: 0 4px 0 rgba(0,0,0,0.2) !important;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.2) !important;
         }
 
         @keyframes morphing {
@@ -87,11 +94,8 @@
         }
         .animate-morph { animation: morphing 6s infinite ease-in-out; }
 
-        @keyframes hop {
-            0%, 100% { transform: translateY(0) scale(1, 1); }
-            50% { transform: translateY(-20px) scale(0.9, 1.1); }
-        }
-        .animate-hop { animation: hop 0.4s ease-out; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
         .custom-scrollbar::-webkit-scrollbar { width: 8px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--clay-card-shadow); border-radius: 20px; }
