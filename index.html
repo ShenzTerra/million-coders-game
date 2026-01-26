@@ -4,31 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClayBot Studio • Coding for Kids</title>
+    <title>ClayBot Studio • Coding Adventure</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Child-friendly "Toy" Palette */
-            --clay-red: #FF6B6B;
-            --clay-blue: #4D96FF;
-            --clay-green: #6BCB77;
-            --clay-yellow: #FFD93D;
-            --clay-purple: #927DFF;
-            --clay-orange: #FF9F43;
-            
-            --bg-canvas: #F7F9FC;
-            --clay-card-bg: #ffffff;
-            --clay-card-border: #E2E8F0;
-            --clay-card-shadow: #CBD5E1;
-            --clay-text: #334155;
-            --playground-bg: #ffffff;
-            --outer-shadow: rgba(51, 65, 85, 0.08);
-        }
-
-        .dark-mode {
+            /* Child-friendly "Candy Dark" Palette */
             --bg-canvas: #0f172a;
             --clay-card-bg: #1e293b;
             --clay-card-border: #334155;
@@ -36,6 +19,14 @@
             --clay-text: #f1f5f9;
             --playground-bg: #0f172a;
             --outer-shadow: rgba(0, 0, 0, 0.4);
+
+            /* Enhanced "Nicer" Block Colors - Soft but Vibrant */
+            --clay-red: #FF7B7B;    /* Soft Coral */
+            --clay-blue: #64B5F6;   /* Sky Blue */
+            --clay-green: #81C784;  /* Minty Green */
+            --clay-yellow: #FFD54F; /* Soft Amber */
+            --clay-purple: #B39DDB; /* Soft Lavender */
+            --clay-orange: #FFB74D; /* Soft Peach */
         }
 
         body { 
@@ -44,16 +35,16 @@
           color: var(--clay-text);
           overflow-x: hidden; 
           -webkit-tap-highlight-color: transparent;
-          transition: background-color 0.4s ease, color 0.4s ease;
+          user-select: none;
         }
 
-        /* Subtle "Clay" Texture */
+        /* Clay Texture Overlay */
         body::before {
             content: "";
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none;
-            opacity: 0.03;
+            opacity: 0.04;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
             z-index: 999;
         }
@@ -63,23 +54,26 @@
             border-radius: 32px;
             border: 4px solid var(--clay-card-border);
             box-shadow: 0 8px 0 var(--clay-card-shadow), 0 15px 30px var(--outer-shadow);
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* Clay Buttons with inner highlights for a 3D effect */
         .clay-btn {
             position: relative;
-            border: 2px solid rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.15);
             transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
-        .clay-btn-red { background: var(--clay-red); box-shadow: 0 6px 0 #E55A5A, inset 0 2px 4px rgba(255,255,255,0.3); }
-        .clay-btn-blue { background: var(--clay-blue); box-shadow: 0 6px 0 #3D85E5, inset 0 2px 4px rgba(255,255,255,0.3); }
-        .clay-btn-green { background: var(--clay-green); box-shadow: 0 6px 0 #5BB566, inset 0 2px 4px rgba(255,255,255,0.3); }
-        .clay-btn-yellow { background: var(--clay-yellow); box-shadow: 0 6px 0 #E5C236, inset 0 2px 4px rgba(255,255,255,0.3); }
-        .clay-btn-purple { background: var(--clay-purple); box-shadow: 0 6px 0 #7E6AE5, inset 0 2px 4px rgba(255,255,255,0.3); }
-        .clay-btn-orange { background: var(--clay-orange); box-shadow: 0 6px 0 #E58B36, inset 0 2px 4px rgba(255,255,255,0.3); }
-        .clay-btn-black { background: #334155; box-shadow: 0 6px 0 #1E293B, inset 0 2px 4px rgba(255,255,255,0.1); }
+        /* Inner squishy highlights */
+        .clay-btn-red { background: var(--clay-red); box-shadow: 0 6px 0 #E56A6A, inset 0 2px 4px rgba(255,255,255,0.4); color: #fff; }
+        .clay-btn-blue { background: var(--clay-blue); box-shadow: 0 6px 0 #4A9ADB, inset 0 2px 4px rgba(255,255,255,0.4); color: #fff; }
+        .clay-btn-green { background: var(--clay-green); box-shadow: 0 6px 0 #6BAA6E, inset 0 2px 4px rgba(255,255,255,0.4); color: #fff; }
+        .clay-btn-yellow { background: var(--clay-yellow); box-shadow: 0 6px 0 #E5BF47, inset 0 2px 4px rgba(255,255,255,0.5); color: #5D4037; }
+        .clay-btn-purple { background: var(--clay-purple); box-shadow: 0 6px 0 #9575CD, inset 0 2px 4px rgba(255,255,255,0.4); color: #fff; }
+        .clay-btn-orange { background: var(--clay-orange); box-shadow: 0 6px 0 #E5A545, inset 0 2px 4px rgba(255,255,255,0.4); color: #fff; }
+        .clay-btn-black { background: #334155; box-shadow: 0 6px 0 #1E293B, inset 0 2px 4px rgba(255,255,255,0.1); color: #fff; }
         
         .clay-btn:active:not(:disabled) {
             transform: translateY(4px);
@@ -98,7 +92,16 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
         .custom-scrollbar::-webkit-scrollbar { width: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--clay-card-shadow); border-radius: 20px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 20px; }
+
+        /* Child-friendly labels */
+        .text-label {
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+        }
     </style>
     <script type="importmap">
     {
@@ -111,7 +114,7 @@
     </script>
 <link rel="stylesheet" href="/index.css">
 </head>
-<body>
+<body class="dark-mode">
     <div id="root"></div>
 <script type="module" src="/index.tsx"></script>
 </body>
